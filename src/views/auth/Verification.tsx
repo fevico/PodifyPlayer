@@ -5,7 +5,7 @@ import AuthFormContainer from '@components/AuthFormContainer';
 import OTPField from '@ui/OTPField';
 import AppButton from '@ui/AppButton';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {AuthStackParamList} from 'src/@types/navigation';
+import {AuthStackParamList, ProfileNavigationStackParamList} from 'src/@types/navigation';
 import client from '@src/api/Client';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import colors from '@utils/colors';
@@ -13,7 +13,7 @@ import catchAsyncError from '@src/api/catchError';
 import {updateNotification} from '@src/store/notification';
 import {useDispatch} from 'react-redux';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Verification'>;
+type Props = NativeStackScreenProps<AuthStackParamList | ProfileNavigationStackParamList, 'Verification'>;
 
 const otpFields = new Array(6).fill('');
 
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   countDown: {
-    color: colors.PRIMARY,
+    color: colors.SECONDARY,
     marginRight: 7,
   },
 });

@@ -2,17 +2,32 @@ import AppHeader from '@components/AppHeader';
 import AvaterFields from '@ui/AvaterFields';
 import colors from '@utils/colors';
 import {FC, useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Pressable, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  PermissionsAndroid,
+} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AppButton from '@ui/AppButton';
-import { getClient } from '@src/api/Client';
+import {getClient} from '@src/api/Client';
 import catchAsyncError from '@src/api/catchError';
-import { updateNotification } from '@src/store/notification';
-import { useDispatch, useSelector } from 'react-redux';
-import { keys, removeFromAsyncStorage } from '@utils/asyncStorage';
-import { updateProfile, updateLoggedInState, updateBusyState, getAuthState } from '@src/store/auth';
+import {updateNotification} from '@src/store/notification';
+import {useDispatch, useSelector} from 'react-redux';
+import {keys, removeFromAsyncStorage} from '@utils/asyncStorage';
+import {
+  updateProfile,
+  updateLoggedInState,
+  updateBusyState,
+  getAuthState,
+} from '@src/store/auth';
 import deepEqual from 'deep-equal';
+import ImagePicker from 'react-native-image-crop-picker';
+import { getPermissionToReadImages } from '@utils/helper';
+import ReVerificationLink from '@components/ReVerificationLink';
 
 interface Props {}
 interface ProfileInfo {
@@ -21,14 +36,15 @@ interface ProfileInfo {
 }
 
 const ProfileSettings: FC<Props> = props => {
-  const [userInfo, setUserInfo] = useState<ProfileInfo>({name: ''})
+  const [userInfo, setUserInfo] = useState<ProfileInfo>({name: ''});
+  const [busy, setBusy] = useState(false);
   const dispatch = useDispatch();
-  const {profile} = useSelector(getAuthState)
+  const {profile} = useSelector(getAuthState);
 
   const isSame = deepEqual(userInfo, {
-    name: profile?.name, 
-    avater: profile?.avatar
-  })
+    name: profile?.name,
+    avater: profile?.avatar,
+  });
 
   const handleLogout = async (fromAll?: boolean) => {
     dispatch(updateBusyState(true));
@@ -46,9 +62,62 @@ const ProfileSettings: FC<Props> = props => {
     dispatch(updateBusyState(false));
   };
 
-  useEffect(()=>{
-    if(profile) setUserInfo({name: profile.name, avater: profile.avatar})
-  }, [profile])
+  const handleSubmit = async () => {
+    setBusy(true);
+    try {
+      if (!userInfo.name.trim())
+        return dispatch(
+          updateNotification({
+            message: 'Profile name is required',
+            type: 'error',
+          }),
+        );
+      const formData = new FormData();
+      formData.append('name', userInfo.name);
+
+      if(userInfo.avater){
+        formData.append('avater', {
+          name: "avater",
+          type: "image/jpeg",
+          uri: userInfo.avater
+        })
+      }
+
+      const client = await getClient({'Content-Type': 'multipart/form-data'});
+      const {data} = await client.post('/auth/update-profile', formData);
+      dispatch(updateProfile(data.profile));
+      dispatch(
+        updateNotification({
+          message: 'Your Profile is updated.',
+          type: 'success',
+        }),
+      );
+    } catch (error) {
+      const errorMessage = catchAsyncError(error);
+      dispatch(updateNotification({message: errorMessage, type: 'error'}));
+    }
+    setBusy(false);
+  };
+
+  const handleImageSelect = async () => {
+    try {
+      await getPermissionToReadImages()
+      const {path} = await ImagePicker.openPicker({
+        cropping: true,
+        width: 300,
+        height: 300,
+      });
+
+      setUserInfo({...userInfo, avater: path})
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (profile) setUserInfo({name: profile.name, avater: profile.avatar});
+  }, [profile]);
 
   return (
     <View style={styles.container}>
@@ -60,15 +129,19 @@ const ProfileSettings: FC<Props> = props => {
 
       <View style={styles.settingOptionsContainer}>
         <View style={styles.avatarContainer}>
-          <AvaterFields source={userInfo.avater}/>
-          <Pressable style={styles.paddingLeft}>
+          <AvaterFields source={userInfo.avater} />
+          <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
             <Text style={styles.linkText}>Update Profile Image</Text>
           </Pressable>
         </View>
-        <TextInput onChangeText={text => setUserInfo({...userInfo, name: text})} style={styles.nameInput} value={userInfo.name} />
+        <TextInput
+          onChangeText={text => setUserInfo({...userInfo, name: text})}
+          style={styles.nameInput}
+          value={userInfo.name}
+        />
         <View style={styles.emailConainer}>
           <Text style={styles.email}>{profile?.email}</Text>
-          <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />
+          {profile?.verified ? <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />: <ReVerificationLink LinkTitle='verify' activeAtFirst />}
         </View>
       </View>
 
@@ -86,10 +159,16 @@ const ProfileSettings: FC<Props> = props => {
           <Text style={styles.logoutBtnTitle}>Logout</Text>
         </Pressable>
       </View>
-{!isSame ? 
-      <View style={styles.marginTop}>
-        <AppButton title="Update" borderRadius={7} />
-      </View> : null}
+      {!isSame ? (
+        <View style={styles.marginTop}>
+          <AppButton
+            onPress={handleSubmit}
+            title="Update"
+            borderRadius={7}
+            busy={busy}
+          />
+        </View>
+      ) : null}
     </View>
   );
 };
