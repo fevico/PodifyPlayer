@@ -12,18 +12,22 @@ import colors from '@utils/colors';
 import catchAsyncError from '@src/api/catchError';
 import {updateNotification} from '@src/store/notification';
 import {useDispatch} from 'react-redux';
+import ReVerificationLink from '@components/ReVerificationLink';
 
 type Props = NativeStackScreenProps<AuthStackParamList | ProfileNavigationStackParamList, 'Verification'>;
+
+type PosibleScreen = {
+  ProfileSettings: undefined;
+  SignIn: undefined;
+}
 
 const otpFields = new Array(6).fill('');
 
 const Verification: FC<Props> = ({route}) => {
-  const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const navigation = useNavigation<NavigationProp<PosibleScreen>>();
   const [otp, setOtp] = useState([...otpFields]);
   const [activeOtpIndex, setActiveOtpIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [coundDown, setCoundDown] = useState(60);
-  const [canSendNewOtpRequest, setCanSendNewOtpRequest] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -59,6 +63,7 @@ const Verification: FC<Props> = ({route}) => {
     return value.trim();
   });
 
+
   const handleSubmit = async () => {
     if (!isValidOtp)
       return dispatch(
@@ -71,50 +76,28 @@ const Verification: FC<Props> = ({route}) => {
         token: otp.join(''),
       });
       dispatch(updateNotification({message: data.messge, type: 'success'}));
-      // navigate back to sign in
-      navigation.navigate('SignIn');
+
+      const {routeNames} = navigation.getState()
+
+      if(routeNames.includes('SignIn')){
+              // navigate back to sign in
+        navigation.navigate('SignIn');
+      }
+
+      if(routeNames.includes('ProfileSettings')){
+              // navigate back to sign in
+        navigation.navigate('ProfileSettings');
+      }
+
     } catch (error) {
       console.log('Error inside Verification: ', error);
     }
     setSubmitting(false);
   };
 
-  const requestForOTP = async () => {
-    setCoundDown(60);
-    setCanSendNewOtpRequest(false);
-    try {
-      await client.post('/auth/re-verify-email', {
-        userId: userInfo.id,
-      });
-    } catch (error) {
-      const errorMessage = catchAsyncError(error);
-      dispatch(updateNotification({message: errorMessage, type: 'error'}));
-    }
-  };
-
   useEffect(() => {
     inputRef.current?.focus();
   }, [activeOtpIndex]);
-
-  useEffect(() => {
-    if (canSendNewOtpRequest) return;
-
-    const intervalId = setInterval(() => {
-      setCoundDown(oldCountDown => {
-        if (oldCountDown <= 0) {
-          setCanSendNewOtpRequest(true);
-          clearInterval(intervalId);
-
-          return 0;
-        }
-        return oldCountDown - 1;
-      });
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [canSendNewOtpRequest]);
 
   return (
     <AuthFormContainer heading="Please look at your email.">
@@ -139,14 +122,7 @@ const Verification: FC<Props> = ({route}) => {
       <AppButton busy={submitting} title="Submit" onPress={handleSubmit} />
 
       <View style={styles.linkContainer}>
-        {coundDown > 0 ? (
-          <Text style={styles.countDown}>{coundDown} sec</Text>
-        ) : null}
-        <AppLink
-          active={canSendNewOtpRequest}
-          title="Re-send OTP"
-          onPress={requestForOTP}
-        />
+        <ReVerificationLink LinkTitle='Re-send OTP' userId={userInfo.id} />
       </View>
     </AuthFormContainer>
   );
@@ -164,7 +140,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
     justifyContent: 'flex-end',
-    flexDirection: 'row',
   },
   countDown: {
     color: colors.SECONDARY,

@@ -63,7 +63,7 @@ const SignIn: FC<Props> = props => {
 
       await saveToAsyncStorage(keys.AUTH_TOKEN, data.token);
 
-      dispatch(updateProfile(data.profile));
+      dispatch(updateProfile(data.profile)); 
       dispatch(updateLoggedInState(true));
     } catch (error) {
       const errorMessage = catchAsyncError(error)

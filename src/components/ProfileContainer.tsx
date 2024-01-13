@@ -5,6 +5,7 @@ import {FC} from 'react';
 import {StyleSheet, View, Text, Pressable} from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Octicons from 'react-native-vector-icons/Octicons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { ProfileNavigationStackParamList } from '@src/@types/navigation';
 
@@ -23,7 +24,7 @@ const ProfileContainer: FC<Props> = ({profile}) => {
         <Text style={styles.profileName}>{profile.name}</Text>
         <View style={styles.flexRow}>
           <Text style={styles.email}>{profile.email}</Text>
-          <MaterialIcon name="verified" size={15} color={colors.SECONDARY} />
+          {profile.verified ? <MaterialIcon name="verified" size={15} color={colors.SECONDARY} /> : <Octicons name='unverified' size={15} color={colors.SECONDARY} />}
         </View>
 
         <View style={styles.flexRow}>

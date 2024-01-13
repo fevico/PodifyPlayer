@@ -41,10 +41,10 @@ const LostPassword: FC<Props> = props => {
   
   const handleSubmit = async(values: InitialValue , actions: FormikHelpers<InitialValue>) => {
     // we want to send this information to our api 
-    actions.setSubmitting(true)
+    actions.setSubmitting(true) 
     try {      
       const {data} = await client.post('/auth/forget-password', 
-      {...values}
+      {...values,}
       )
       console.log(data)
 
