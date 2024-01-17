@@ -4,7 +4,7 @@ import TrackPlayer, {
     State,
   } from 'react-native-track-player';
   import {useDispatch, useSelector} from 'react-redux';
-  import {AudioData} from 'src/@types/audio';
+  import {AudioData} from '@src/@types/audio';
   import {getPlayerState, updateOnGoingAudio, updateOnGoingList} from '@src/store/player';
 import deepEqual from 'deep-equal';
   
@@ -28,9 +28,12 @@ import deepEqual from 'deep-equal';
 
     const {onGoingAudio, onGoingList} = useSelector(getPlayerState);
     const dispatch = useDispatch();
-  
+
     const isPalyerReady = playbackState !== State.None;
-  
+    const isPlaying = playbackState === State.Playing;
+    const isPaused = playbackState === State.Paused;
+    const isBusy = playbackState === State.Buffering || playbackState === State.Connecting;
+    
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
       if (!isPalyerReady) {
         // Playing audio for the first time.
@@ -70,8 +73,13 @@ import deepEqual from 'deep-equal';
         dispatch(updateOnGoingAudio(item))
       }
     };
+
+    const togglePlayPause = async() =>{
+      if(isPlaying) await TrackPlayer.pause()
+      if(isPaused) await TrackPlayer.play()
+    }
   
-    return {onAudioPress};
+    return {onAudioPress, togglePlayPause, isBusy, isPalyerReady, isPlaying};
   };
   
   export default useAudioController;
