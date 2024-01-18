@@ -7,7 +7,7 @@ import {AudioData} from '@src/@types/audio';
 import {useFetchRecommendedAudios} from '@src/hooks/query';
 import AudioCard from '@ui/AudioCard';
 import { useSelector } from 'react-redux';
-import { getPlayerState } from '@src/store/player';
+import { getPlayerState } from '@src/store/player'; 
 
 interface Props {
   onAudioPress(item: AudioData, data: AudioData[]): void;
@@ -45,11 +45,13 @@ const RecommendedAudios: FC<Props> = ({onAudioLongPress, onAudioPress}) => {
         data={data || []}
         renderItem={item => {
           return (
-            <AudioCard title={item.title} poster={item.poster}               
+            <AudioCard title={item.title}
+            poster={item.poster}
             onPress={() => onAudioPress(item, data)}
-            onLongPress={() => onAudioLongPress(item, data)} 
+            onLongPress={() => onAudioLongPress(item, data)}
             containerStyle={{width: '100%'}}
-            playing={onGoingAudio?.id === item.id}/>
+            playing={onGoingAudio?.id === item.id}
+          />
 
           );
         }}

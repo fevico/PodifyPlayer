@@ -9,10 +9,10 @@ interface Props {
     onPress?(): void;
 }
 
-const PlayPauseBtn: FC<Props> = ({color = colors.CONSTRACT, playing}, onPress) => {
+const PlayPauseBtn: FC<Props> = ({color = colors.CONSTRACT, playing, onPress}) => {
   return (
     <Pressable onPress={onPress} style={styles.button}>
-      {playing ?<AntDesign name="pause" size={24} color={color}/> : <AntDesign name="caretright" size={24} color={color} />}
+      {playing ? <AntDesign name="pause" size={24} color={color}/> : <AntDesign name="caretright" size={24} color={color} />}
     </Pressable>
   );
 };

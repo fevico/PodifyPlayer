@@ -30,8 +30,8 @@ const fetchRecommended = async(): Promise<AudioData[]> =>{
     return data.audios
  }
 
-export const useFetchRecommendedAudios = () => {
-    const dispatch = useDispatch()
+export const useFetchRecommendedAudios = () => { 
+    const dispatch = useDispatch();
 
     return useQuery(['recommended'], {
         queryFn: () => fetchRecommended(),

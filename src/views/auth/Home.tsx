@@ -5,7 +5,7 @@ import PlayListModal from '@components/PlaylistModal';
 import RecommendedAudios from '@components/RecommendedAudios';
 import colors from '@utils/colors';
 import {FC, useEffect, useState} from 'react';
-import {View, ScrollView, StyleSheet, Pressable, Text} from 'react-native';
+import { ScrollView, StyleSheet, Pressable, Text} from 'react-native';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
 import {AudioData, Playlist} from '@src/@types/audio';
@@ -13,7 +13,7 @@ import catchAsyncError from '@src/api/catchError';
 import {getClient} from '@src/api/Client';
 import {useFetchPlaylist} from '@src/hooks/query';
 import {updateNotification} from '@src/store/notification';
-import TrackPlayer, { Track } from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import useAudioController from '@src/hooks/useAudioController';
 import AppView from '@components/AppView';
 
@@ -164,6 +164,7 @@ const Home: FC<Props> = props => {
         onSubmit={handlePlaylistSubmit}
       />
     </ScrollView>
+
     </AppView>
 
   );

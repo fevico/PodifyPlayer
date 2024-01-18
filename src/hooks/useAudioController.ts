@@ -35,7 +35,7 @@ import deepEqual from 'deep-equal';
     const isBusy = playbackState === State.Buffering || playbackState === State.Connecting;
     
     const onAudioPress = async (item: AudioData, data: AudioData[]) => {
-      if (!isPalyerReady) {
+      if (!playbackState) {
         // Playing audio for the first time.
         await updateQueue(data);
         const index = data.findIndex(audio => audio.id === item.id);
@@ -78,9 +78,12 @@ import deepEqual from 'deep-equal';
       if(isPlaying) await TrackPlayer.pause()
       if(isPaused) await TrackPlayer.play()
     }
+
+  const seekTo = async (position: number) =>{
+    await TrackPlayer.seekTo(position);
+  }
   
-    return {onAudioPress, togglePlayPause, isBusy, isPalyerReady, isPlaying};
+    return {onAudioPress, togglePlayPause, seekTo, isBusy, isPalyerReady, isPlaying};
   };
   
   export default useAudioController;
-  
