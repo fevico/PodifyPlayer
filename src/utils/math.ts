@@ -6,7 +6,7 @@ export interface MapRangeOptions {
     inputMin: number;
   }
   
-  export function mapRange(options: MapRangeOptions) {
+  export function mapRange(options: MapRangeOptions) { 
     const {inputValue, outputMax, outputMin, inputMax, inputMin} = options;
   
     const result =

@@ -5,12 +5,14 @@ import { AudioData } from "@src/@types/audio";
 
 interface Player {
     onGoingAudio: AudioData | null;
-    onGoingList: AudioData[]
+    onGoingList: AudioData[];
+    playbackRate: number
 }
 
 const initialState : Player = {
     onGoingAudio: null,
-    onGoingList: []
+    onGoingList: [],
+    playbackRate: 1
 }
 
 const slice = createSlice({
@@ -23,6 +25,10 @@ const slice = createSlice({
 
         updateOnGoingList(playerState, {payload}: PayloadAction<AudioData[]>){
             playerState.onGoingList = payload
+        },
+
+        updatePlaybackRate(playerState, {payload}: PayloadAction<number>){
+            playerState.playbackRate = payload
         }
     }
 });
@@ -32,6 +38,6 @@ export const getPlayerState = createSelector
     playerState => playerState,
 );
 
-export const {updateOnGoingAudio, updateOnGoingList} = slice.actions
+export const {updateOnGoingAudio, updateOnGoingList, updatePlaybackRate} = slice.actions
 
 export default slice.reducer

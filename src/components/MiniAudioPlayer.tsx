@@ -10,6 +10,7 @@ import Loader from '@ui/Loader';
 import {mapRange} from '@utils/math';
 import {useProgress} from 'react-native-track-player';
 import AudioPlayer from './AudioPlayer';
+import CurrentAudioList from './CurrentAudioList';
 
 interface Props {}
 
@@ -19,18 +20,28 @@ const MiniAudioPlayer: FC<Props> = props => {
   const {onGoingAudio} = useSelector(getPlayerState);
   const {isPlaying, isBusy, togglePlayPause} = useAudioController();
   const progress = useProgress();
-  const [playerVisibility, setPlayerVisibility] = useState(false)
+  const [playerVisibility, setPlayerVisibility] = useState(false);
+  const [showCurrentList, setShowCurrentList] = useState(false);
 
   const poster = onGoingAudio?.poster;
   const source = poster ? {uri: poster} : require('../assets/music.png');
 
-  const showPlayerModal = () =>{
-    setPlayerVisibility(true)
-  }
+  const showPlayerModal = () => {
+    setPlayerVisibility(true);
+  };
 
-  const closePlayerModal = () =>{
-    setPlayerVisibility(false)
-  }
+  const closePlayerModal = () => {
+    setPlayerVisibility(false);
+  };
+
+  const handleOnCurrentListClose = () => {
+    setShowCurrentList(false);
+  };
+
+  const handleOnListOptionPress = () => {
+    closePlayerModal();
+    setShowCurrentList(true);
+  };
 
   return (
     <>
@@ -65,7 +76,12 @@ const MiniAudioPlayer: FC<Props> = props => {
           <PlayPauseBtn playing={isPlaying} onPress={togglePlayPause} />
         )}
       </View>
-      <AudioPlayer visible={playerVisibility} onRequestClose={closePlayerModal}/>
+      <AudioPlayer
+        visible={playerVisibility}
+        onRequestClose={closePlayerModal}
+        onListOptionPress={handleOnListOptionPress}
+      />
+      <CurrentAudioList visible={showCurrentList} onRequestClose={handleOnCurrentListClose}/>
     </>
   );
 };

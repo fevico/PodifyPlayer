@@ -74,16 +74,55 @@ import deepEqual from 'deep-equal';
       }
     };
 
-    const togglePlayPause = async() =>{
+    const togglePlayPause = async() => {
       if(isPlaying) await TrackPlayer.pause()
       if(isPaused) await TrackPlayer.play()
-    }
+  }
 
-  const seekTo = async (position: number) =>{
+  const seekTo = async (position: number) => {
     await TrackPlayer.seekTo(position);
   }
-  
-    return {onAudioPress, togglePlayPause, seekTo, isBusy, isPalyerReady, isPlaying};
+
+  const skipTo = async (sec: number) =>{
+   const currentPosition =  await TrackPlayer.getPosition()
+    await TrackPlayer.seekTo(currentPosition + sec);
   };
+
+ const onNextPress = async () =>{
+  const currentList = await TrackPlayer.getQueue();
+  const currentIndex = await TrackPlayer.getCurrentTrack();
+  if(currentIndex === null) return 
+
+  const nextIndex = currentIndex + 1;
+
+  const nextaudio = currentList[nextIndex]
+
+  if(nextaudio){
+    await TrackPlayer.skipToNext()
+    dispatch(updateOnGoingAudio(onGoingList[nextIndex])) 
+  }
+ }
+
+ const onPreviousPress = async () =>{
+  const currentList = await TrackPlayer.getQueue(); 
+  const currentIndex = await TrackPlayer.getCurrentTrack();
+  if(currentIndex === null) return 
+
+  const preIndex = currentIndex - 1;
+
+  const nextaudio = currentList[preIndex];
+
+  if(nextaudio){
+    await TrackPlayer.skipToPrevious()
+    dispatch(updateOnGoingAudio(onGoingList[preIndex]))
+  }
+ };
+
+ const setPlaybackRate = async(rate: number) =>{
+  await TrackPlayer.setRate(rate)
+ }
+  
+    return {onAudioPress, setPlaybackRate, onPreviousPress, onNextPress, togglePlayPause, skipTo, seekTo, isBusy, isPalyerReady, isPlaying};
+  }; 
   
   export default useAudioController;

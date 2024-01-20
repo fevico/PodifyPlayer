@@ -5,11 +5,14 @@ import {View, StyleSheet, Pressable} from 'react-native';
 interface Props{
     size?: number;
     children: ReactNode;
-    ignoreContainer?: boolean
+    ignoreContainer?: boolean;
+    onPress?():void;
 }
 
-const PlayerController: FC<Props> = ({size = 45, children, ignoreContainer}) =>{
-return <Pressable style={{
+const PlayerController: FC<Props> = ({size = 45, children, onPress, ignoreContainer}) =>{
+return <Pressable 
+onPress={onPress}
+    style={{
     width: 45,
     height: 45, 
     borderRadius: size/2,
