@@ -2,11 +2,16 @@ import TrackPlayer, {
     Track,
     usePlaybackState,
     State,
+    AppKilledPlaybackBehavior,
+    Capability,
   } from 'react-native-track-player';
   import {useDispatch, useSelector} from 'react-redux';
   import {AudioData} from '@src/@types/audio';
   import {getPlayerState, updateOnGoingAudio, updateOnGoingList} from '@src/store/player';
 import deepEqual from 'deep-equal';
+import { useEffect } from 'react';
+
+  let isReady = false
   
   const updateQueue = async (data: AudioData[]) => {
     const lists: Track[] = data.map(item => {
@@ -121,6 +126,33 @@ import deepEqual from 'deep-equal';
  const setPlaybackRate = async(rate: number) =>{
   await TrackPlayer.setRate(rate)
  }
+
+ useEffect(()=>{
+  const setUpPlayer = async() => {
+    if(isReady) return 
+    await TrackPlayer.setupPlayer()
+    await TrackPlayer.updateOptions({
+      progressUpdateEventInterval:1,
+      android: {
+        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification
+      },
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+      ],
+      compactCapabilities:[
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+      ]
+    })
+  }
+  setUpPlayer()
+  isReady = true
+}, [])
   
     return {onAudioPress, setPlaybackRate, onPreviousPress, onNextPress, togglePlayPause, skipTo, seekTo, isBusy, isPalyerReady, isPlaying};
   }; 
