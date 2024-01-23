@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import {getClient} from "@src/api/Client";
 import catchAsyncError from "@src/api/catchError";
 import { updateNotification } from "@src/store/notification";
-import { AudioData, Playlist } from "@src/@types/audio";
+import { AudioData, History, Playlist } from "@src/@types/audio";
 
 const fetchLatest = async(): Promise<AudioData[]> =>{
     const client = await getClient()
@@ -90,6 +90,24 @@ export const useFetchFavourite = () => {
 
     return useQuery(['favourite'], {
         queryFn: () => fetchFavourite(),
+        onError(err) {
+            const errorMessage = catchAsyncError(err)
+            dispatch(updateNotification({message: errorMessage, type: 'error'}))
+        },
+    });
+}
+
+const fetchHistories = async(): Promise<History[]> =>{
+    const client = await getClient()
+    const {data} = await client('/history');
+    return data.histories;
+ }
+
+export const useFetchHistories = () => {
+    const dispatch = useDispatch()
+
+    return useQuery(['histories'], {
+        queryFn: () => fetchHistories(),
         onError(err) {
             const errorMessage = catchAsyncError(err)
             dispatch(updateNotification({message: errorMessage, type: 'error'}))

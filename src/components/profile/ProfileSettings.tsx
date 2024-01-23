@@ -9,8 +9,10 @@ import {
   Pressable,
   TextInput,
   PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AppButton from '@ui/AppButton';
 import {getClient} from '@src/api/Client';
@@ -115,6 +117,29 @@ const ProfileSettings: FC<Props> = props => {
     }
   };
 
+  const cleraHistory = () => {
+    console.log('clearing out history')
+  }
+
+  const handleOnHistoryClear = () =>{
+    Alert.alert("Are you sure?", "This action will clear out all the history!", [
+      {
+        text: 'Clear',
+        style: 'destructive',
+        onPress(){
+          cleraHistory()
+        },
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]),
+    {
+      cancelable: true
+    }
+  }
+
   useEffect(() => {
     if (profile) setUserInfo({name: profile.name, avater: profile.avatar});
   }, [profile]);
@@ -146,19 +171,31 @@ const ProfileSettings: FC<Props> = props => {
       </View>
 
       <View style={styles.titleContainer}>
+        <Text style={styles.title}>History</Text>
+      </View>
+
+      <View style={styles.settingOptionsContainer}>
+      <Pressable onPress={handleOnHistoryClear} style={styles.buttonContainer}>
+          <MaterialComIcon name="broom" size={20} color={colors.CONSTRACT} />
+          <Text style={styles.buttonTitle}>Clear All</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.titleContainer}>
         <Text style={styles.title}>Logout</Text>
       </View>
 
       <View style={styles.settingOptionsContainer}>
-        <Pressable onPress={() => handleLogout(true)} style={styles.logoutBtn}>
+        <Pressable onPress={() => handleLogout(true)} style={styles.buttonContainer}>
           <AntDesign name="logout" size={20} color={colors.CONSTRACT} />
-          <Text style={styles.logoutBtnTitle}>Logout From All</Text>
+          <Text style={styles.buttonTitle}>Logout From All</Text>
         </Pressable>
-        <Pressable onPress={() => handleLogout()} style={styles.logoutBtn}>
+        <Pressable onPress={() => handleLogout()} style={styles.buttonContainer}>
           <AntDesign name="logout" size={20} color={colors.CONSTRACT} />
-          <Text style={styles.logoutBtnTitle}>Logout</Text>
+          <Text style={styles.buttonTitle}>Logout</Text>
         </Pressable>
       </View>
+
       {!isSame ? (
         <View style={styles.marginTop}>
           <AppButton
@@ -222,12 +259,12 @@ const styles = StyleSheet.create({
     color: colors.CONSTRACT,
     marginRight: 10,
   },
-  logoutBtn: {
+  buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 15,
   },
-  logoutBtnTitle: {
+  buttonTitle: {
     color: colors.CONSTRACT,
     fontSize: 18,
     marginLeft: 5,

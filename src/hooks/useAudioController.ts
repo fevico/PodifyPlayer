@@ -132,7 +132,7 @@ import { useEffect } from 'react';
     if(isReady) return 
     await TrackPlayer.setupPlayer()
     await TrackPlayer.updateOptions({
-      progressUpdateEventInterval:1,
+      progressUpdateEventInterval:10,
       android: {
         appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification
       },
