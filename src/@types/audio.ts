@@ -20,12 +20,14 @@ export interface Playlist {
     visibility: "public" | "private";
 }
 
+export type historyAudio = {
+    audioId: string;
+    date: string;
+    id: string;
+    title: string;
+}
+
 export interface History {
-    data: string;
-    audios:{
-        audioId: string;
-        date: string;
-        id: string;
-        title: string;
-    }[];
+    date: string;
+    audios:historyAudio[];
 }
