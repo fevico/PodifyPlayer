@@ -9,7 +9,7 @@ const AppInput: FC<Props> = props => {
     <TextInput
       {...props}
       placeholderTextColor={colors.INACTIVE_CONSTRACT}
-      style={[styles.input, props.style]}
+      style={[styles.input, props.style]} 
     />
   );
 };

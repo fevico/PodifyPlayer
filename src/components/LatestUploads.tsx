@@ -55,9 +55,7 @@ const LatestUploads: FC<Props> = ({onAudioLongPress, onAudioPress}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 15,
-  },
+  container: { },
   title: {
     color: colors.CONSTRACT,
     fontSize: 20,

@@ -37,6 +37,7 @@ export const useFetchRecommendedAudios = () => {
         queryFn: () => fetchRecommended(),
         onError(err) {
             const errorMessage = catchAsyncError(err)
+            console.log(errorMessage)
             dispatch(updateNotification({message: errorMessage, type: 'error'}))
         },
     });
@@ -110,6 +111,46 @@ export const useFetchHistories = () => {
         queryFn: () => fetchHistories(),
         onError(err) {
             const errorMessage = catchAsyncError(err)
+            // console.log(errorMessage)
+            dispatch(updateNotification({message: errorMessage, type: 'error'}))
+        },
+    });
+}
+
+
+const fetchRecentlyPlayed = async(): Promise<AudioData[]> =>{
+    const client = await getClient()
+    const {data} = await client('/history/recently-played');
+    return data.audios;
+ }
+
+export const useFetchRecentlyPlayed = () => {
+    const dispatch = useDispatch()
+
+    return useQuery(['recently-played'], {
+        queryFn: () => fetchRecentlyPlayed(),
+        onError(err) {
+            const errorMessage = catchAsyncError(err)
+            console.log(err)
+            dispatch(updateNotification({message: errorMessage, type: 'error'}))
+        },
+    });
+}
+
+const fetchRecommendedPlaylist = async(): Promise<Playlist[]> =>{
+    const client = await getClient()
+    const {data} = await client('/profile/auto-generated-playlist');
+    return data.playlist;
+ }
+
+export const useFetchRecommendedPlaylist = () => {
+    const dispatch = useDispatch()
+
+    return useQuery(['recently-played'], {
+        queryFn: () => fetchRecommendedPlaylist(),
+        onError(err) {
+            const errorMessage = catchAsyncError(err)
+            console.log(err)
             dispatch(updateNotification({message: errorMessage, type: 'error'}))
         },
     });

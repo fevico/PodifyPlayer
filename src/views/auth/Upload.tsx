@@ -21,6 +21,7 @@ import catchAsyncError from '@src/api/catchError';
 import {getClient} from '@src/api/Client';
 import {updateNotification} from '@src/store/notification';
 import * as yup from 'yup';
+import AppView from '@components/AppView';
 
 interface FormFields {
   title: string;
@@ -120,6 +121,7 @@ const Upload: FC<Props> = props => {
   };
 
   return (
+    <AppView>
     <ScrollView style={styles.container}>
       <View style={styles.fileSelctorContainer}>
         <FileSelector
@@ -212,6 +214,8 @@ const Upload: FC<Props> = props => {
         />
       </View>
     </ScrollView>
+    </AppView>
+
   );
 };
 
