@@ -21,7 +21,8 @@ import MaterialCommIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 interface Props {
   visible: boolean;
   onRequestClose(): void;
-  onListOptionPress(): void;
+  onListOptionPress?(): void;
+  onProfileLinkPress?(): void;
 }
 
 const formatedDuration = (duration = 0) => {
@@ -30,7 +31,7 @@ const formatedDuration = (duration = 0) => {
   });
 };
 
-const AudioPlayer: FC<Props> = ({visible, onRequestClose, onListOptionPress}) => {
+const AudioPlayer: FC<Props> = ({visible, onRequestClose, onProfileLinkPress, onListOptionPress}) => {
   const [showAudioInfo, setShowAudioInfo] = useState(false);
   const {onGoingAudio, playbackRate} = useSelector(getPlayerState);
   const {
@@ -90,7 +91,7 @@ const AudioPlayer: FC<Props> = ({visible, onRequestClose, onListOptionPress}) =>
         <View style={styles.contentent}>
           <Text style={styles.title}>{onGoingAudio?.title}</Text>
 
-          <AppLink title={onGoingAudio?.owner.name || ''} />
+          <AppLink onPress={onProfileLinkPress} title={onGoingAudio?.owner.name || ''} />
 
           <View style={styles.durationContainer}>
             <Text style={styles.duration}>

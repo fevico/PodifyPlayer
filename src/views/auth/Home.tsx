@@ -5,7 +5,7 @@ import PlayListModal from '@components/PlaylistModal';
 import RecommendedAudios from '@components/RecommendedAudios';
 import colors from '@utils/colors';
 import {FC, useState} from 'react';
-import { ScrollView, StyleSheet, Pressable, Text} from 'react-native';
+import { ScrollView, StyleSheet, Pressable, Text, View} from 'react-native';
 import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch} from 'react-redux';
 import {AudioData, Playlist} from '@src/@types/audio';
@@ -99,16 +99,28 @@ const Home: FC<Props> = props => {
   return (
     <AppView>
     <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.space}>
       <RecentlyPlayed/>
+      </View>
+
+      <View style={styles.space}>
       <LatestUploads
         onAudioPress={onAudioPress}
         onAudioLongPress={handleOnLongPress}
       />
+      </View>
+      
+      <View style={styles.space}>
       <RecommendedAudios
         onAudioPress={onAudioPress}
         onAudioLongPress={handleOnLongPress}
       />
+      </View>
+      
+      <View style={styles.space}>
       <RecommendedPlaylist/>
+      </View>
+      
       <OptionsModal
         visible={showOptions}
         onRequestClose={() => {
@@ -174,6 +186,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
+  },
+  space:{
+    marginBottom: 15,
   },
   optionLabel: {color: colors.PRIMARY, fontSize: 16, marginLeft: 5},
 });

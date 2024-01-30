@@ -12,20 +12,21 @@ const RecommendedPlaylist: FC<Props> = props => {
     <View>
       <Text style={styles.header}>Playlist for you </Text>
       <FlatList
-      horizontal
-      showsHorizontalScrollIndicator={false}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         data={data}
-        keyExtractor={(item)=>item.id}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => {
           return (
-            <Pressable style={styles.container} key={item.id}>
+            <Pressable style={styles.container}>
               <Image
                 source={require('../assets/music.png')}
                 style={styles.image}
               />
+
               <View style={styles.overlay}>
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.title}>{item.itemsCount}</Text>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{item.itemsCount}</Text>
               </View>
             </Pressable>
           );

@@ -43,10 +43,10 @@ import { useEffect } from 'react';
       if (!playbackState) {
         // Playing audio for the first time.
         await updateQueue(data);
+        dispatch(updateOnGoingAudio(item));
         const index = data.findIndex(audio => audio.id === item.id);
         await TrackPlayer.skip(index);
         await TrackPlayer.play();
-        dispatch(updateOnGoingAudio(item));
         return dispatch(updateOnGoingList(data))
       }
   

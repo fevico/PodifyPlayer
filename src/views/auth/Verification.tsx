@@ -9,7 +9,6 @@ import {AuthStackParamList, ProfileNavigationStackParamList} from 'src/@types/na
 import client from '@src/api/Client';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import colors from '@utils/colors';
-import catchAsyncError from '@src/api/catchError';
 import {updateNotification} from '@src/store/notification';
 import {useDispatch} from 'react-redux';
 import ReVerificationLink from '@components/ReVerificationLink';

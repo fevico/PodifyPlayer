@@ -11,6 +11,12 @@ import {mapRange} from '@utils/math';
 import {useProgress} from 'react-native-track-player';
 import AudioPlayer from './AudioPlayer';
 import CurrentAudioList from './CurrentAudioList';
+import {useFetchIsFavourite} from '@src/hooks/query';
+import {useMutation, useQueryClient} from 'react-query';
+import {getClient} from '@src/api/Client';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { HomeNavigationStackParamList } from '@src/@types/navigation';
+import { getAuthState } from '@src/store/auth';
 
 interface Props {}
 
@@ -18,13 +24,34 @@ export const MiniPlayerHeight = 60;
 
 const MiniAudioPlayer: FC<Props> = props => {
   const {onGoingAudio} = useSelector(getPlayerState);
+  const {profile} = useSelector(getAuthState);
   const {isPlaying, isBusy, togglePlayPause} = useAudioController();
   const progress = useProgress();
   const [playerVisibility, setPlayerVisibility] = useState(false);
   const [showCurrentList, setShowCurrentList] = useState(false);
+  const {data: isFav} = useFetchIsFavourite(onGoingAudio?.id || '');
+  const {navigate} = useNavigation<NavigationProp<HomeNavigationStackParamList>>()
 
   const poster = onGoingAudio?.poster;
   const source = poster ? {uri: poster} : require('../assets/music.png');
+
+  const queryClient = useQueryClient();
+
+  const toggleIsFav = async (id: string) => {
+    if(!id) return;
+    const client = await getClient();
+    client.post('/favourite?audioId=' + id);
+  };
+
+  const favouriteMutation = useMutation({
+    mutationFn: async id => toggleIsFav(id),
+    onMutate: (id: string) => {
+      queryClient.setQueryData<boolean>(
+        ['favourite', onGoingAudio?.id],
+        oldData => !oldData,
+      );
+    },
+  });
 
   const showPlayerModal = () => {
     setPlayerVisibility(true);
@@ -41,6 +68,18 @@ const MiniAudioPlayer: FC<Props> = props => {
   const handleOnListOptionPress = () => {
     closePlayerModal();
     setShowCurrentList(true);
+  };
+
+  const handleOnProfileLinkPress = () => {
+    closePlayerModal();
+    if(profile?.id === onGoingAudio?.owner.id){
+      navigate('Profile');
+    }else{
+      navigate('PublicProfile', {
+        profileId: onGoingAudio?.owner.id || ''
+      })
+    }
+
   };
 
   return (
@@ -66,8 +105,12 @@ const MiniAudioPlayer: FC<Props> = props => {
           <Text style={styles.name}>{onGoingAudio?.owner.name}</Text>
         </Pressable>
 
-        <Pressable style={{paddingHorizontal: 10}}>
-          <AntDesign name="hearto" size={24} color={colors.CONSTRACT} />
+        <Pressable onPress={()=>favouriteMutation.mutate(onGoingAudio?.id || '')} style={{paddingHorizontal: 10}}>
+          <AntDesign
+            name={isFav ? 'heart' : 'hearto'}
+            size={24}
+            color={colors.CONSTRACT}
+          />
         </Pressable>
 
         {isBusy ? (
@@ -80,8 +123,12 @@ const MiniAudioPlayer: FC<Props> = props => {
         visible={playerVisibility}
         onRequestClose={closePlayerModal}
         onListOptionPress={handleOnListOptionPress}
+        onProfileLinkPress={handleOnProfileLinkPress}
       />
-      <CurrentAudioList visible={showCurrentList} onRequestClose={handleOnCurrentListClose}/>
+      <CurrentAudioList
+        visible={showCurrentList}
+        onRequestClose={handleOnCurrentListClose}
+      />
     </>
   );
 };

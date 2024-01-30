@@ -1,11 +1,11 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import colors from "@utils/colors"
 import Home from "@views/auth/Home"
-import Profile from "@views/auth/Profile"
 import Upload from "@views/auth/Upload"
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ProfileNavigator from "./ProfileNavigator"
+import HomeNavigator from "./HomeNavigator"
 
 const Tab = createBottomTabNavigator()
 
@@ -16,7 +16,7 @@ const TabNavigator = () =>{
             backgroundColor: colors.PRIMARY
         }
     }}>
-        <Tab.Screen name="HomeScreen" component={Home} options={{
+        <Tab.Screen name="HomeNavigator" component={HomeNavigator} options={{
             tabBarIcon: (props) =>{
                 return <AntDesign name="home" size={props.size} color={props.color}/>
             }, 
