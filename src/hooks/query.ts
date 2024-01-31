@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import {getClient} from "@src/api/Client";
 import catchAsyncError from "@src/api/catchError";
 import { updateNotification } from "@src/store/notification";
-import { AudioData, History, Playlist } from "@src/@types/audio";
+import { AudioData, CompletePlaylist, History, Playlist } from "@src/@types/audio";
 
 const fetchLatest = async(): Promise<AudioData[]> =>{
     const client = await getClient()
@@ -224,6 +224,25 @@ export const useFetchPublicPlaylist = (id: string) => {
 
     return useQuery(['playlist', id], {
         queryFn: () => fetchPublicPlaylist(id),
+        onError(err) {
+            const errorMessage = catchAsyncError(err)
+            dispatch(updateNotification({message: errorMessage, type: 'error'}))
+        },
+        enabled: id ? true : false,
+    });
+}
+
+const fetchPlaylistAudios = async(id: string): Promise<CompletePlaylist> =>{
+    const client = await getClient()
+    const {data} = await client('/profile/playlist-audios/'+ id);
+    return data.list;
+ }
+
+export const useFetchPlaylistAudios = (id: string) => {
+    const dispatch = useDispatch()
+
+    return useQuery(['playlist-audio', id], {
+        queryFn: () => fetchPlaylistAudios(id),
         onError(err) {
             const errorMessage = catchAsyncError(err)
             dispatch(updateNotification({message: errorMessage, type: 'error'}))

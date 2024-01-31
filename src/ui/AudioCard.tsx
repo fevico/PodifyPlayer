@@ -19,7 +19,7 @@ const AudioCard: FC<Props> = ({title, poster, playing = false, containerStyle, o
       onPress={onPress}
       onLongPress={onLongPress}
       style={[styles.container, containerStyle]}>
-        <View>
+        <View style={styles.posterContainer}>
         <Image source={source} style={styles.poster} />
         <PlayAnimation visible={playing} />
         </View>
@@ -34,8 +34,13 @@ const styles = StyleSheet.create({
   container: {width: 100, marginRight: 15},
   poster: {
     width: "100%",
+    height: '100%',
+  },
+  posterContainer: {
+    width: "100%",
     aspectRatio: 1,
     borderRadius: 7,
+    overflow: 'hidden'
   },
   title: {
     color: colors.CONSTRACT,

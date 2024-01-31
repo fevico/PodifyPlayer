@@ -31,3 +31,8 @@ export interface History {
     date: string;
     audios:historyAudio[];
 }
+export interface CompletePlaylist {
+    id: string;
+    title: string;
+    audios:AudioData[];
+}
