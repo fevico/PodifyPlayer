@@ -2,8 +2,7 @@ import { getFromAsyncStorage, keys } from '@utils/asyncStorage';
 import anxios, { CreateAxiosDefaults } from 'axios';
 
 const client = anxios.create({
-    baseURL: 'http://192.168.43.108:8989', 
-    
+    baseURL: 'http://192.168.43.108:8989',  
 })
 
 const baseURL = 'http://192.168.43.108:8989';

@@ -1,13 +1,43 @@
+import { getClient } from '@src/api/Client';
+import catchAsyncError from '@src/api/catchError';
+import { useFetchIsFollowing } from '@src/hooks/query';
+import { updateNotification } from '@src/store/notification';
 import AvaterFields from '@ui/AvaterFields';
 import colors from '@utils/colors';
 import {FC} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, Pressable} from 'react-native';
+import { useMutation, useQueryClient } from 'react-query';
+import { useDispatch } from 'react-redux';
 
 interface Props {
   profile?: PublicProfile;
 }
 
 const PublicProfileContainer: FC<Props> = ({profile}) => {
+  const {data: isFollowing} = useFetchIsFollowing(profile?.id || '')
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient()
+
+  const followingMutation = useMutation({
+    mutationFn: async(id) =>toggleFollowing(id),
+    onMutate: (id: string) => {
+      queryClient.setQueryData<boolean>(['is-following', id], (oldData)=> !oldData)
+    }
+  })
+
+  const toggleFollowing = async(id: string) =>{
+    try {
+      if(!id)return;
+
+    const client = await getClient()
+   await client.post('/profile/update-follower/'+ id);
+   queryClient.invalidateQueries({queryKey: ['profile', id]})
+
+    } catch (error) {
+     const errorMessage = catchAsyncError(error)
+     dispatch(updateNotification({message: errorMessage, type: 'error'}))
+    }
+      }
 
   if (!profile) return null;
 
@@ -17,11 +47,15 @@ const PublicProfileContainer: FC<Props> = ({profile}) => {
       <View style={styles.profileInfo}>
         <Text style={styles.profileName}>{profile.name}</Text>
 
-        <View style={styles.flexRow}>
-          <Text style={styles.profileActionLink}>
+        <Text style={styles.followerText}>
             {profile.followers} Followers
           </Text>
-        </View>
+
+        <Pressable onPress={()=> followingMutation.mutate(profile.id)} style={styles.flexRow}>
+          <Text style={styles.profileActionLink}>
+            { isFollowing ? "Unfollow" : "Follow"} 
+          </Text>
+        </Pressable>
       </View>
 
     </View>
@@ -54,6 +88,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.SECONDARY,
     color: colors.PRIMARY,
     padding: 4,
+    paddingVertical: 2,
+    marginTop: 5,
+  },
+  followerText: {
+    color: colors.CONSTRACT,
     paddingVertical: 2,
     marginTop: 5,
   },
